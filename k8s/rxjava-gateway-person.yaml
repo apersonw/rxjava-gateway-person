@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rxjava-gateway-person
+  labels:
+    app: rxjava-gateway-person
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: rxjava-gateway-person
+      labels:
+        app: rxjava-gateway-person
+    spec:
+      containers:
+        - name: rxjava-gateway-person
+          image: registry.cn-shanghai.aliyuncs.com/taro-mall/rxjava-gateway-person:latest
+          imagePullPolicy: Always
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: rxjava-gateway-person
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rxjava-gateway-person
+spec:
+  selector:
+    app: rxjava-gateway-person
+  ports:
+    - port: 8080
+      protocol: TCP
+      targetPort: 8080
+  type: NodePort
