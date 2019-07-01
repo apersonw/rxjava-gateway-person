@@ -26,8 +26,10 @@ public class RxGatewayPersonApplication {
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
         return builder
                 .routes()
-                .route(r -> r.path("/user/**").filters(p -> p.stripPrefix(1)).uri("http://rxjava-service-user"))
-                .route(r -> r.path("/goods/**").filters(p -> p.stripPrefix(1)).uri("http://rxjava-service-goods"))
+                .route(r -> r.path("/user/**").filters(p -> p.stripPrefix(1)).uri("http://localhost:8081"))
+//                .route(r -> r.path("/user/**").filters(p -> p.stripPrefix(1)).uri("http://rxjava-service-user"))
+//                .route(r -> r.path("/goods/**").filters(p -> p.stripPrefix(1)).uri("http://rxjava-service-goods"))
+                .route(r -> r.path("/goods/**").filters(p -> p.stripPrefix(1)).uri("http://localhost:8082"))
                 .route(r -> r.path("/order/**").filters(p -> p.stripPrefix(1)).uri("http://rxjava-service-order"))
                 .route(r -> r.path("/pay/**").filters(p -> p.stripPrefix(1)).uri("http://rxjava-service-pay"))
                 .build();
@@ -41,19 +43,14 @@ public class RxGatewayPersonApplication {
             WebClient.Builder webClientBuilder
     ) {
         return ReactiveHttpClientAdapter.build(
-                conversionService, webClientBuilder, "rxjava-service-user"
+                conversionService, webClientBuilder, "localhost:8081"
         );
     }
 
     @Bean
-    public InnerUserApi serveUserApi(@Qualifier("userClientAdapter") ClientAdapter clientAdapter) {
-        InnerUserApi innerUserApi = new InnerUserApi();
-        innerUserApi.setclientAdapter(clientAdapter);
-        return innerUserApi;
-    }
-
-    @Bean
-    public TokenFilter tokenFilter(InnerUserApi innerUserApi) {
-        return new TokenFilter(innerUserApi);
+    public InnerUserApi innerUserApi(@Qualifier("userClientAdapter") ClientAdapter clientAdapter) {
+        InnerUserApi api = new InnerUserApi();
+        api.setclientAdapter(clientAdapter);
+        return api;
     }
 }
